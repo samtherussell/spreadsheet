@@ -1,4 +1,22 @@
 
+TEXT_TYPE = "TEXT"
+NUMBER_TYPE = "NUMBER"
+FORMULA_TYPE = "FORMULA"
+
+class Cell:
+
+    def __init__(self, definition):
+
+        try:
+            self.value = int(definition)
+            self.type = NUMBER_TYPE
+        except ValueError:
+            self.value = definition
+            self.type = TEXT_TYPE
+
+    def __repr__(self):
+        return "[%s] %s"%(self.type, self.value)
+
 spreadsheet = {}
 
 def read_command(arguments):
@@ -8,7 +26,7 @@ def read_command(arguments):
         raise Exception("read command needs a single argument: location as column letter and row number eg. B4")
 
     if arguments in spreadsheet:
-        print(spreadsheet[arguments])
+        print(spreadsheet[arguments].value)
     else:
         print("<empty>")
     
@@ -18,7 +36,7 @@ def write_command(arguments):
     if len(arguments) < 2:
         raise Exception("write command needs a two arguments: location and value")
 
-    spreadsheet[arguments[0]] = arguments[1]
+    spreadsheet[arguments[0]] = Cell(arguments[1])
 
 def parse_input(input_string):
 
