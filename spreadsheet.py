@@ -1,3 +1,13 @@
+import pickle
+
+class ExitException(Exception):
+    pass
+
+class InputException(Exception):
+    pass
+
+class FormulaException(InputException):
+    pass
 
 def parse_formula(text):
 
@@ -13,10 +23,13 @@ FORMULA_TYPE = "FORMULA"
 
 class Formula:
 
-    def __init__(self, formula, func, cached=None):
+    def __init__(self, formula, func):
         self.formula = formula
         self.func = func
-        self.cached = cached
+        self.cached = None
+
+    def calculate(self, sheet):
+        self.cached = self.func(sheet)
 
     def __repr__(self):
         return self.formula + "[=" + str(self.cached) + "]"
@@ -40,9 +53,10 @@ class Cell:
                 (deps, func) = parse_formula(definition[1:])
                 self.change_deps(deps, sheet)
 
-                self.value = Formula(definition, func, func(sheet))
-                    
+                self.value = Formula(definition, func)
                 self.type = FORMULA_TYPE
+
+                self.value.calculate(sheet)
             else:
                 try:
                     if "." in definition:
@@ -53,6 +67,8 @@ class Cell:
                 except ValueError:
                     self.value = definition
                     self.type = TEXT_TYPE
+
+            self.update_subs(sheet)
 
     def add_sub(self, sub):
         self.subscribers.add(sub)
@@ -67,14 +83,16 @@ class Cell:
         self.dependancies = new_deps
 
         for dep in self.dependancies:
+            if dep not in sheet:
+                sheet[dep] = Cell(dep)
             sheet[dep].add_sub(self.identifier)
 
     def update_value(self, sheet):
         if self.type == FORMULA_TYPE:
-            self.value.cached = self.value.func(sheet)
+            self.value.calculate(sheet)
             self.update_subs(sheet)
         else:
-            raise Exception("can only update value with FORMULA_TYPE")
+            raise Exception(self.identifier + " does not have type:FORMULA_TYPE")
 
     def update_subs(self, sheet):
         for sub in self.subscribers:
@@ -82,7 +100,7 @@ class Cell:
 
     def get_value(self):
         if self.type == EMPTY_TYPE:
-            raise Exception("referenced cell is empty")
+            raise FormulaException("referenced cell is empty")
         elif self.type == TEXT_TYPE:
             return self.value
         elif self.type == NUMBER_TYPE:
@@ -101,29 +119,40 @@ def read_command(arguments):
     arguments = arguments.strip()
     
     if len(arguments) != 2:
-        raise Exception("read command needs a single argument: location as column letter and row number eg. B4")
+        raise InputException("read command needs a single argument: location as column letter and row number eg. B4")
 
-    if arguments in spreadsheet:
-        print(spreadsheet[arguments].get_value())
-    else:
+    if arguments not in spreadsheet:
         print("<empty>")
+    else:
+        try:
+            print(spreadsheet[arguments].get_value())
+        except FormulaException:
+            print("<empty>")
     
 def write_command(arguments):
     arguments = arguments.split(" ", 1)
     
     if len(arguments) < 2:
-        raise Exception("write command needs a two arguments: location and value")
+        raise InputException("write command needs a two arguments: location and value")
 
     if arguments[0] not in spreadsheet:
         spreadsheet[arguments[0]] = Cell(arguments[0])
 
     spreadsheet[arguments[0]].set_definition(arguments[1], spreadsheet)
-    spreadsheet[arguments[0]].update_subs(spreadsheet)
+
+def save_sheet(arguments):
+    with open(arguments, "wb") as f:
+        pickle.dump(spreadsheet, f)
+
+def open_sheet(arguments):
+    with open(arguments, "rb") as f:
+        global spreadsheet
+        spreadsheet = pickle.load(f)
 
 def parse_input(input_string):
 
     if len(input_string) < 1:
-        raise Exception("please specify a command")
+        raise InputException("please specify a command")
 
     commands = input_string.split(" ", 1)
 
@@ -144,16 +173,24 @@ def perform_command(command, arguments):
         write_command(arguments)
     elif command in ["print", "p"]:
         print(spreadsheet)
+    elif command in ["save", "s"]:
+        save_sheet(arguments)
+    elif command in ["open", "o"]:
+        open_sheet(arguments)
+    elif command in ["quit", "q"]:
+        raise ExitException()
     else:
-        raise Exception("command not supported")
+        raise InputException("command not supported")
 
 while True:
     input_string = input("spreadsheet > ")
     try:
         (command, arguments) = parse_input(input_string)
         perform_command(command, arguments)
-    except Exception as e:
-        print(str(e))
+    except InputException as e:
+        print(e)
+    except ExitException as e:
+        break
     
     
     
