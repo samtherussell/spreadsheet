@@ -14,20 +14,6 @@ def dependancies():
                 .parsecmap(lambda x: "".join(x).upper())
                 ).parsecmap(set)
 
-def lazy(f):
-    return lambda a,b: f()(a,b)
-
-def spaced(p):
-    return spaces().compose(p).skip(spaces())
-
-def bracketed(p):
-    return string("(").compose(p).skip(string(")"))
-
-functions = {
-    "MIN": lambda a,b: a if a < b else b,
-    "MAX": lambda a,b: a if a > b else b
-}
-
 def identifier():
     return spaced(regex("[A-Z][\-A-Z]*[A-Z]")).parsecmap(functions.__getitem__)
 
@@ -36,6 +22,11 @@ def number():
 
 def args():
     return sepBy(add(), string(","))
+
+functions = {
+    "MIN": lambda a,b: a if a < b else b,
+    "MAX": lambda a,b: a if a > b else b
+}
 
 def func():
     def f(data):
@@ -83,3 +74,12 @@ def add():
             return res
         return g
     return spaced(sepBy(mul(), string("+"))).parsecmap(f)
+
+def lazy(f):
+    return lambda a,b: f()(a,b)
+
+def spaced(p):
+    return spaces().compose(p).skip(spaces())
+
+def bracketed(p):
+    return string("(").compose(p).skip(string(")"))
