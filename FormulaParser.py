@@ -1,5 +1,19 @@
 from parsec import *
 
+def parse_formula(text):
+
+    deps = dependancies().parse(text)
+    func = add().parse(text)
+    
+    return (deps, func)
+
+def dependancies():
+    return many( \
+        many(none_of("~")).compose(string("~")) \
+                .compose(joint(letter(), digit())) \
+                .parsecmap(lambda x: "".join(x).upper())
+                ).parsecmap(set)
+
 def lazy(f):
     return lambda a,b: f()(a,b)
 
@@ -69,11 +83,3 @@ def add():
             return res
         return g
     return spaced(sepBy(mul(), string("+"))).parsecmap(f)
-
-
-def parse_formula(text):
-
-    deps = []
-    func = add().parse(text)
-    
-    return (deps, func)
