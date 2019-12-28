@@ -1,4 +1,5 @@
 from parsec import *
+import math
 
 def parse_formula(text):
 
@@ -25,7 +26,17 @@ def args():
 
 functions = {
     "MIN": lambda a,b: a if a < b else b,
-    "MAX": lambda a,b: a if a > b else b
+    "MAX": lambda a,b: a if a > b else b,
+    "POW": lambda a,b: a**b,
+    "SIN": lambda x: math.sin(x),
+    "COS": lambda x: math.cos(x),
+    "TAN": lambda x: math.tan(x),
+    "EQ": lambda a,b: 1 if a == b else 0,
+    "LT": lambda a,b: 1 if a < b else 0,
+    "GT": lambda a,b: 1 if a > b else 0,
+    "LTE": lambda a,b: 1 if a <= b else 0,
+    "GTE": lambda a,b: 1 if a >= b else 0,
+    "IF": lambda a,b,c: b if a == 1 else c
 }
 
 def func():
