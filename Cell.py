@@ -1,6 +1,8 @@
 from FormulaParser import parse_formula
 from Exceptions import *
 
+from collections import deque
+
 class Formula:
 
     def __init__(self, formula, func):
@@ -53,7 +55,7 @@ class Cell:
                     self.value = definition
                     self.type = TEXT_TYPE
 
-            self.update_subs(sheet)
+            self.propagate_values(sheet)
 
     def add_sub(self, sub):
         self.subscribers.add(sub)
@@ -75,13 +77,27 @@ class Cell:
     def update_value(self, sheet):
         if self.type == FORMULA_TYPE:
             self.value.calculate(sheet)
-            self.update_subs(sheet)
-        else:
-            raise Exception(self.identifier + " does not have type:FORMULA_TYPE")
-
+            # self.update_subs(sheet)
+        
     def update_subs(self, sheet):
         for sub in self.subscribers:
             sheet[sub].update_value(sheet)
+
+    def propagate_values(self, sheet):
+
+        queue = deque([self.identifier])
+        visited = set()
+        
+        while len(queue) > 0:
+            identifier = queue.popleft()
+            if identifier in visited:
+                raise FormulaException("Cyclic dependancy on " + identifier)
+            visited.add(identifier)
+            cell = sheet[identifier]
+            cell.update_value(sheet)
+            for sub in cell.subscribers:
+                queue.append(sub)
+                    
 
     def get_value(self):
         if self.type == EMPTY_TYPE:

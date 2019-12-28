@@ -54,6 +54,8 @@ def read_command(arguments):
     if len(arguments) != 2:
         raise InputException("read command needs a single argument: location as column letter and row number eg. B4")
 
+    arguments = arguments.upper()
+
     if arguments not in spreadsheet:
         print("<empty>")
     else:
@@ -68,6 +70,8 @@ def write_command(arguments):
     if len(arguments) < 2:
         raise InputException("write command needs a two arguments: location and value")
 
+    arguments[0] = arguments[0].upper()
+    
     if arguments[0] not in spreadsheet:
         spreadsheet[arguments[0]] = Cell(arguments[0])
 
