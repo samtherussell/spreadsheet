@@ -74,7 +74,7 @@ def mul():
                 res = res * atom(sheet)
             return res
         return g
-    return spaced(sepBy(atom(), string("*"))).parsecmap(f)
+    return spaced(sepBy1(atom(), string("*"))).parsecmap(f)
 
 def add():
     def f(atoms):
@@ -84,7 +84,7 @@ def add():
                 res = res + atom(sheet)
             return res
         return g
-    return spaced(sepBy(mul(), string("+"))).parsecmap(f)
+    return spaced(sepBy1(mul(), string("+"))).parsecmap(f)
 
 def lazy(f):
     return lambda a,b: f()(a,b)
