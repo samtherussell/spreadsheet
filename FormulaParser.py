@@ -1,11 +1,15 @@
 from parsec import *
+from Exceptions import FormulaException
 import math
 
 def parse_formula(text):
 
-    deps = dependancies().parse(text)
-    func = add().parse(text)
-    
+    try:
+        deps = dependancies().parse(text)
+        func = add().parse(text)
+    except ParseError as e:
+        raise FormulaException(str(e))
+
     return (deps, func)
 
 def dependancies():
@@ -64,7 +68,8 @@ def const():
     return number().parsecmap(f)
 
 def atom():
-    return spaced(choice(bracketed(lazy(add)), choice(link(), choice(func(), const()))))
+    return spaced(choice(bracketed(lazy(add)), choice(link(), choice(func(), const()))))\
+           .desc("either bracketed expresion, reference to another cell, function call or constant")
 
 def mul():
     def f(atoms):
