@@ -25,6 +25,9 @@ def identifier():
 def number():
     return spaced(regex("[0-9]+(\.[0-9]+)?")).parsecmap(float)
 
+def text_string():
+    return string("\"").compose(many(none_of("\""))).skip(string("\"")).parsecmap("".join)
+
 def args():
     return sepBy(add(), string(","))
 
@@ -65,7 +68,7 @@ def const():
         def g(sheet):
             return data
         return g
-    return number().parsecmap(f)
+    return spaced(choice(number(),text_string())).parsecmap(f)
 
 def atom():
     return spaced(choice(bracketed(lazy(add)), choice(link(), choice(func(), const()))))\
@@ -74,20 +77,34 @@ def atom():
 def mul():
     def f(atoms):
         def g(sheet):
-            res = 1
-            for atom in atoms:
-                res = res * atom(sheet)
-            return res
+            vals = [atom(sheet) for atom in atoms]
+            if any((type(v) == str for v in vals)):
+                if len(vals) == 1:
+                    return vals[0]
+                else:
+                    raise FormulaException("cannot multiply by a string")
+            else:
+                res = 1
+                for val in vals:
+                    res = res * val
+                return res
         return g
     return spaced(sepBy1(atom(), string("*"))).parsecmap(f)
 
 def add():
     def f(atoms):
         def g(sheet):
-            res = 0
-            for atom in atoms:
-                res = res + atom(sheet)
-            return res
+            vals = [atom(sheet) for atom in atoms]
+            if any((type(v) == str for v in vals)):
+                if len(vals) == 1:
+                    return vals[0]
+                else:
+                    raise FormulaException("cannot add to a string")
+            else:
+                res = 0
+                for val in vals:
+                    res = res + val
+                return res
         return g
     return spaced(sepBy1(mul(), string("+"))).parsecmap(f)
 

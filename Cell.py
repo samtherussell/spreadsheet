@@ -43,7 +43,6 @@ class Cell:
                 self.value = Formula(definition, func)
                 self.type = FORMULA_TYPE
 
-                self.value.calculate(sheet)
             else:
                 try:
                     if "." in definition:
@@ -77,11 +76,6 @@ class Cell:
     def update_value(self, sheet):
         if self.type == FORMULA_TYPE:
             self.value.calculate(sheet)
-            # self.update_subs(sheet)
-        
-    def update_subs(self, sheet):
-        for sub in self.subscribers:
-            sheet[sub].update_value(sheet)
 
     def propagate_values(self, sheet):
 
