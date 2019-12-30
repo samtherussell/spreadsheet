@@ -1,6 +1,7 @@
 import pickle
 from Exceptions import *
 from Cell import Cell
+from Functions import function_help_text
 
 spreadsheet = {}
 
@@ -93,24 +94,14 @@ help_text = {
     "read": "(r) to read the value of a cell eg. read A1",
     "write": """(w) to write a value to a cell eg. write A1 42
     Values can be numeric or text constants or formulas.
-    Formulas are prefixed with '='
+
+    Formulas
+    Are prefixed with '='
     Cell references in formulas must be prefixed with ~ eg. =~B4
     Number constants in formulas do not need a prefix.
-    Currently there is no support for Text in formulas.
+    Text constants need to be surrounded by double quotes eg. ="hi"
     The following functions are supported with the syntax: FUNC-NAME(ARG1,ARG2...)
-        MIN: return the minimum of 2 numbers
-        MAX: return the maximum of 2 numbers
-        POW: returns first argument to the power of the second
-        SIN: return sine of the input
-        COS: return cossine of the input
-        TAN: return tangential of the input
-        EQ: returns 1 if the first argument is equal to the second else 0
-        LT: returns 1 if the first argument is less than to the second else 0
-        GT: returns 1 if the first argument is greater than to the second else 0
-        LTE: returns 1 if the first argument is less than or equal to the second else 0
-        GTE: returns 1 if the first argument is greater than or equal to the second else 0
-        IF: if the first argument is 1 return the second else return the third
-        CONCAT: concatinate two strings together""",
+    """+function_help_text,
     "print": "(p) to print the spreadsheet internal representation",
     "save": "(s) to save the spreadsheet. specify the filename eg. save file.sheet",
     "open": "(o) to open a saved spreadsheet. specify the filename eg. open file.sheet",
@@ -120,11 +111,11 @@ help_text = {
 def print_help(argument):
     if argument == "":
         for c in help_text:
-            print(c, ":", help_text[c])
+            print(c, ":", help_text[c], "\n")
     elif argument not in help_text:
         print("no command with name")
     else:
-        print(argument, ":", help_text[argument], "\n")
+        print(argument, ":", help_text[argument])
 
 
 if __name__ == "__main__":

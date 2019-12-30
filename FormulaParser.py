@@ -1,5 +1,6 @@
 from parsec import *
 from Exceptions import FormulaException
+from Functions import functions
 import math
 
 def parse_formula(text):
@@ -31,28 +32,12 @@ def text_string():
 def args():
     return sepBy(add(), string(","))
 
-functions = {
-    "MIN": lambda a,b: a if a < b else b,
-    "MAX": lambda a,b: a if a > b else b,
-    "POW": lambda a,b: a**b,
-    "SIN": lambda x: math.sin(x),
-    "COS": lambda x: math.cos(x),
-    "TAN": lambda x: math.tan(x),
-    "EQ": lambda a,b: 1 if a == b else 0,
-    "LT": lambda a,b: 1 if a < b else 0,
-    "GT": lambda a,b: 1 if a > b else 0,
-    "LTE": lambda a,b: 1 if a <= b else 0,
-    "GTE": lambda a,b: 1 if a >= b else 0,
-    "IF": lambda a,b,c: b if a == 1 else c,
-    "CONCAT": lambda a,b: str(a)+str(b),
-}
-
 def func():
     def f(data):
         def g(sheet):
             function = data[0]
             args = (d(sheet) for d in data[1])
-            return function(*args)
+            return function(sheet, *args)
         return g
     return joint(identifier(), bracketed(lazy(args))).parsecmap(f)
 
