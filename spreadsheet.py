@@ -62,10 +62,7 @@ def read_command(arguments):
     if arguments not in spreadsheet:
         return "<empty>"
     else:
-        try:
-            return spreadsheet[arguments].get_value()
-        except FormulaException:
-            return "<empty>"
+        return spreadsheet[arguments].get_value()
     
 def write_command(arguments):
     arguments = arguments.split(" ", 1)
