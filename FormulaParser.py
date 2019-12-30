@@ -64,16 +64,15 @@ def mul():
     def f(atoms):
         def g(sheet):
             vals = [atom(sheet) for atom in atoms]
-            if any((type(v) == str for v in vals)):
-                if len(vals) == 1:
-                    return vals[0]
-                else:
-                    raise FormulaException("cannot multiply by a string")
-            else:
+            if len(vals) == 1:
+                return vals[0]
+            elif all((type(v) == float or type(v) == int for v in vals)):
                 res = 1
                 for val in vals:
                     res = res * val
                 return res
+            else:
+                raise FormulaException("cannot multiply non numeric values")
         return g
     return spaced(sepBy1(atom(), string("*"))).parsecmap(f)
 
@@ -81,16 +80,15 @@ def add():
     def f(atoms):
         def g(sheet):
             vals = [atom(sheet) for atom in atoms]
-            if any((type(v) == str for v in vals)):
-                if len(vals) == 1:
-                    return vals[0]
-                else:
-                    raise FormulaException("cannot add to a string")
-            else:
+            if len(vals) == 1:
+                return vals[0]
+            elif all((type(v) == float or type(v) == int for v in vals)):
                 res = 0
                 for val in vals:
                     res = res + val
                 return res
+            else:
+                raise FormulaException("cannot add non numeric values")
         return g
     return spaced(sepBy1(mul(), string("+"))).parsecmap(f)
 

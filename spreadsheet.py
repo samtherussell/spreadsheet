@@ -76,6 +76,7 @@ def write_command(arguments):
         spreadsheet[arguments[0]] = Cell(arguments[0])
 
     spreadsheet[arguments[0]].set_definition(arguments[1], spreadsheet)
+    return spreadsheet[arguments[0]].get_value()
 
 def save_sheet(arguments):
     with open(arguments, "wb") as f:
