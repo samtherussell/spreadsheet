@@ -35,7 +35,7 @@ def parse_input(input_string):
 def perform_command(command, arguments):
 
     if command in ["read", "r"]:
-        read_command(arguments)
+        print(read_command(arguments))
     elif command in ["write", "w"]:
         write_command(arguments)
     elif command in ["print", "p"]:
@@ -60,12 +60,12 @@ def read_command(arguments):
     arguments = arguments.upper()
 
     if arguments not in spreadsheet:
-        print("<empty>")
+        return "<empty>"
     else:
         try:
-            print(spreadsheet[arguments].get_value())
+            return spreadsheet[arguments].get_value()
         except FormulaException:
-            print("<empty>")
+            return "<empty>"
     
 def write_command(arguments):
     arguments = arguments.split(" ", 1)
