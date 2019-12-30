@@ -109,7 +109,8 @@ help_text = {
         GT: returns 1 if the first argument is greater than to the second else 0
         LTE: returns 1 if the first argument is less than or equal to the second else 0
         GTE: returns 1 if the first argument is greater than or equal to the second else 0
-        IF: if the first argument is 1 return the second else return the third""",
+        IF: if the first argument is 1 return the second else return the third
+        CONCAT: concatinate two strings together""",
     "print": "(p) to print the spreadsheet internal representation",
     "save": "(s) to save the spreadsheet. specify the filename eg. save file.sheet",
     "open": "(o) to open a saved spreadsheet. specify the filename eg. open file.sheet",
