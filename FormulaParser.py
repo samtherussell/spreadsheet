@@ -43,7 +43,8 @@ functions = {
     "GT": lambda a,b: 1 if a > b else 0,
     "LTE": lambda a,b: 1 if a <= b else 0,
     "GTE": lambda a,b: 1 if a >= b else 0,
-    "IF": lambda a,b,c: b if a == 1 else c
+    "IF": lambda a,b,c: b if a == 1 else c,
+    "CONCAT": lambda a,b: str(a)+str(b),
 }
 
 def func():
