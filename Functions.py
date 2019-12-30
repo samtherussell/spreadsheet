@@ -2,9 +2,9 @@ def get_table(sheet,table):
     refs = table.split(":")
     first_col,first_row = refs[0]
     last_col,last_row = refs[1]
-    rows = [str(x) for x in range(int(first_row), int(last_row)+1)]
-    cols = [chr(x) for x in range(ord(first_col), ord(last_col)+1)]
-    return [[sheet[c+r].get_value() for c in cols] for r in rows]
+    rows = (str(x) for x in range(int(first_row), int(last_row)+1))
+    cols = [chr(x) for x in range(ord(first_col.upper()), ord(last_col.upper())+1)]
+    return ([sheet[c+r].get_value() for c in cols] for r in rows)
 
 def lookup(sheet, table, query, column):
     table = get_table(sheet,table)
